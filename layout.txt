@@ -1,0 +1,20 @@
+register:
+	params: nome, cpf, senha
+	return: token OAUTH*
+
+login:
+	params: cpf, senha
+	return: token OAUTH*
+
+credit:
+	params: value, token OAUTH
+	return: status
+
+debit:
+	params: value, token OAUTH
+	return: status
+
+transactions:
+	params: cpf, token OAUTH
+	return: list
+	
