@@ -1,0 +1,32 @@
+{
+  "name": "BankAPI",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon -w src --exec \"babel-node src --presets env\"",
+    "build": "rimraf dist && babel src -s -D -d dist --presets env",
+    "start": "node dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Spoock01/BankAPI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Spoock01/BankAPI/issues"
+  },
+  "homepage": "https://github.com/Spoock01/BankAPI#readme",
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "express": "^4.17.1",
+    "express-json-validator-middleware": "^2.0.0",
+    "express-validator": "^6.1.1",
+    "nodemon": "^1.19.1",
+    "rimraf": "^2.6.3"
+  }
+}
