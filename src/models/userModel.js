@@ -1,23 +1,26 @@
-import Sequelize, { Transaction } from 'sequelize';
+import Sequelize from 'sequelize';
 import { sequelize } from '../database/database';
-import transactionModel from './transactionsModel'
+import Transaction from './transactionsModel'
+
 
 const User = sequelize.define('user', {
 
     full_name: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
     },
     cpf: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         primaryKey: true
     },
     password: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
     }
 
-});
+}, {
+        timestamps: false
+    });
 
-User.hasMany(Transaction, {foreingKey: 'user_cpf', sourceKey: 'cpf'});
-Transaction.belongsTo(User, {foreingKey: 'user_cpf', sourceKey: 'cpf'});
+// User.hasMany(Transaction, { foreingKey: 'user_cpf', sourceKey: 'cpf' });
+// Transaction.belongsTo(User, { foreingKey: 'user_cpf', sourceKey: 'cpf' });
 
 export default User;

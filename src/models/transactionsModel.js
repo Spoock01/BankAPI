@@ -4,19 +4,22 @@ import { sequelize } from '../database/database';
 
 const Transaction = sequelize.define('transactions', {
 
-    date: {
-        type: Sequelize.DATE
-    },
-    type: {
-        type: Sequelize.STRING
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true
     },
     user_cpf: {
-        type: Sequelize.STRING,
-        primaryKey: true
+        type: Sequelize.TEXT,
+    },
+    transaction_type: {
+        type: Sequelize.TEXT
+    },
+    date: {
+        type: Sequelize.DATE
     }
-
-    },{
+}, 
+    {
         timestamps: false
-});
+    });
 
 export default Transaction;

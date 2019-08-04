@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { check, validationResult } from 'express-validator';
-import CPF_REGEX from '../Utils/Utils';
-import FULL_NAME_REGEX from '../Utils/Utils';
+import { registerUser } from '../controllers/users.controller';
+import { CPF_REGEX, FULL_NAME_REGEX } from '../Utils/Utils';
 
 const router = Router();
 
@@ -9,46 +9,41 @@ const router = Router();
 
 router.post('/register', [
     check('full_name').exists().withMessage("Full name is required")
-    .not().isEmpty().withMessage("Full name cannot be empty")
-    .not().isNumeric().withMessage("Full name must be a string.")
-    .matches(FULL_NAME_REGEX).withMessage("Full name must be characters only"),
-
+        .not().isEmpty().withMessage("Full name cannot be empty")
+        .not().isNumeric().withMessage("Full name must be a string.")
+        .not().matches(FULL_NAME_REGEX).withMessage("Full name must be characters only"),
     check('cpf').exists().withMessage("CPF is required.")
-    .not().isEmpty().withMessage("CPF cannot be empty")
-    .matches(CPF_REGEX).withMessage("Invalid cpf format."),
-
+        .not().isEmpty().withMessage("CPF cannot be empty")
+        .matches(CPF_REGEX).withMessage("Invalid cpf format."),
     check('password').exists().withMessage("Password is required.")
-    .not().isEmpty().isLength({ min: 5 }).withMessage("Password must be at least 5 chars long.")
-    .isString().withMessage("Password must be a string.")   
-], (req, res, next) =>{
-
-    console.log(req.query)
+        .not().isEmpty().isLength({ min: 5 }).withMessage("Password must be at least 5 chars long.")
+        .isString().withMessage("Password must be a string.")
+], (req, res, next) => {
 
     const errors = validationResult(req);
 
-    if(!errors.isEmpty())
+    if (!errors.isEmpty())
         res.send(errors);
     else
-        res.send(req.query);
+        next();
 
-});
+}, registerUser);
 
 router.get('/login', [
     check('cpf').exists().withMessage("CPF is required.")
-    .not().isEmpty().matches(CPF_REGEX).withMessage("Invalid cpf format.")
-    .not().isAlphanumeric().withMessage("CPF must be a string."),
+        .not().isEmpty().matches(CPF_REGEX).withMessage("Invalid cpf format.")
+        .not().isAlphanumeric().withMessage("CPF must be a string."),
     check('password').exists().withMessage("Password is required.")
-    .not().isEmpty().isLength({ min: 5 }).withMessage('Password must be at least 5 chars long.')
-    .isString().withMessage("Password must be a string.")   
-], (req, res, next) =>{
+        .not().isEmpty().isLength({ min: 5 }).withMessage('Password must be at least 5 chars long.')
+        .isString().withMessage("Password must be a string.")
+], (req, res, next) => {
 
     const errors = validationResult(req);
 
-    if(!errors.isEmpty())
+    if (!errors.isEmpty())
         res.send(errors);
-    else
-        res.send("Validated");
 
+    next();
 });
 
 
