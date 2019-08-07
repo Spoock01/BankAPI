@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS Users (
 	cpf TEXT NOT NULL,
 	full_name TEXT NOT NULL,
 	password TEXT NOT NULL,
+	wallet INT NOT NULL DEFAULT 0,
 	PRIMARY KEY (cpf)
 );
 
@@ -11,6 +12,6 @@ CREATE TABLE IF NOT EXISTS Transactions (
 	id SERIAL,
 	user_cpf TEXT NOT NULL,
 	transaction_type TEXT NOT NULL,
-	date DATE NOT NULL DEFAULT CURRENT_DATE,
+	date DATE NOT NULL DEFAULT CURRENT_DATE,	
 	PRIMARY KEY (id)
 );

@@ -1,10 +1,11 @@
 import express from 'express';
 import userRoutes from './routes/userRoute';
 import transactionsRoutes from './routes/transactionsRoute';
+import models from './models'
 
 const app = express();
 
-const port = 9996;
+const port = 9999;
 
 app.use(express.json());
 
@@ -12,8 +13,12 @@ app.use('/transaction', transactionsRoutes);
 app.use('/user', userRoutes);
 
 
-app.listen(port, () => {
-    console.log(`Started on port ${port}`);
+models.sequelize.sync({ force: false }).then(() =>{
+    app.listen(port);
+    console.log(`Running server on port ${port}`);
+
 });
+
+
 
 export default app;

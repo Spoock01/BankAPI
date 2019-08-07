@@ -1,4 +1,5 @@
-import User from '../models/userModel';
+import models from '../models'
+
 
 export async function registerUser(req, res) {
 
@@ -6,7 +7,7 @@ export async function registerUser(req, res) {
 
     try {
 
-        let newUser = await User.create({
+        let newUser = await models.User.create({
             full_name,
             cpf,
             password //falta codificar
@@ -15,14 +16,15 @@ export async function registerUser(req, res) {
         });
 
         if (newUser) {
-            res.status(200).send("User successfully created! Sending Token...");
+
+            // res.send("User successfully created! Sending Token...");
+            res.json(newUser);
         }
 
     } catch (error) {
-
-        res.status(500).json({
-            message: "Something goes wrong.",
-            data: {}
+        
+        res.json({
+            Message: error.errors[0].message
         })
     }
 }

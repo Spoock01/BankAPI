@@ -44,6 +44,7 @@ router.get('/login', [
         res.send(errors);
 
     next();
+    // return token
 });
 
 

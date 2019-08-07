@@ -1,6 +1,7 @@
+
 import Sequelize from 'sequelize';
 
-export const sequelize = new Sequelize(
+const sequelize = new Sequelize(
     'BankAPI',
     'postgres',
     '1234',{
@@ -14,4 +15,14 @@ export const sequelize = new Sequelize(
         },
         logging: false
     }
-)
+);
+
+const models = {
+    User: sequelize.import('./userModel'),
+    Transaction: sequelize.import('./transactionsModel')
+};
+
+models.sequelize = sequelize;
+models.sequelize = sequelize;
+
+export default models;
