@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { registerTransaction, getAllTransactionsByClient } from "../controllers/transactions.controller";
 import { check, validationResult } from 'express-validator';
 import { CPF_REGEX, OPERATION_TYPE } from '../Utils/Utils';
+import jwt from 'jsonwebtoken';
 
 const router = Router();
 
@@ -18,14 +19,22 @@ router.post('/operation',
             
 
     ],
-    (req, res, next) => {
+       verifyToken 
+    ,(req, res, next) => {
 
+        console.log(req.query.token);
         const errors = validationResult(req);
+
+        jwt.verify(req.query.token, 'secretkey', (err, authData) => {
+            if(err){
+                res.status(403).send("Token expirou.");
+            }
+        });
 
         if (!errors.isEmpty())
             res.send(errors);
         else{
-            console.log("Calling registerTransaction")
+            console.log("Calling registerTransaction");
             next();
         } 
         
@@ -54,5 +63,25 @@ router.get('/allTransactions',
         
 
     }, getAllTransactionsByClient);
+
+
+    function verifyToken(req, res, next) {
+        // Get auth header value
+        const bearerHeader = req.headers['authorization'];
+        // Check if bearer is undefined
+        if(typeof bearerHeader !== 'undefined') {
+          // Split at the space
+          const bearer = bearerHeader.split(' ');
+          // Get token from array
+          const bearerToken = bearer[1];
+          // Set the token
+          req.token = bearerToken;
+          next();
+        } else {
+
+          res.status(403).send("Status 403");
+        }
+    }
+
 
 export default router;

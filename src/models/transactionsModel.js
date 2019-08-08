@@ -2,10 +2,6 @@ export default (sequelize, DataTypes) => {
 
     const Transaction = sequelize.define('transactions', {
 
-        // id: {
-        //     type: DataTypes.INTEGER,
-        //     primaryKey: true
-        // },
         user_cpf: {
             type: DataTypes.TEXT,
             allowNull: false,

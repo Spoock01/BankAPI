@@ -14,10 +14,9 @@ export async function getAllTransactionsByClient(req, res) {
     } catch (error) {
         res.send(error);
     }
-
 }
 
-async function getUserByCpf(cpf) {
+export async function getUserByCpf(cpf) {
 
     var current_user = await models.User.findOne({
         where: { cpf }
@@ -29,8 +28,7 @@ async function getUserByCpf(cpf) {
 
 export async function registerTransaction(req, res, next) {
 
-    // Waiting for token
-    models.sequelize.transaction().then( async (tr) =>  {
+    models.sequelize.transaction().then(async () => {
 
         const { transaction_type, cpf, amount } = req.query;
         const current_user = await getUserByCpf(cpf);
@@ -39,39 +37,38 @@ export async function registerTransaction(req, res, next) {
             const { wallet } = current_user;
 
             var newValue = transaction_type === OPERATION_TYPE[0] ?
-                (parseFloat(wallet) + parseFloat(amount)) : 
-                parseFloat(wallet) > parseFloat(amount) ? (parseFloat(wallet) - parseFloat(amount)) : false;
-                
-            if(newValue != false){
-                current_user.update({wallet: newValue})
+                (parseFloat(wallet) + parseFloat(amount)) :
+                parseFloat(wallet) >= parseFloat(amount) ? (parseFloat(wallet) - parseFloat(amount)) : false;
+
+            if (newValue != false) {
+                current_user.update({ wallet: newValue })
                 createOperation(res, current_user, transaction_type, amount);
-                tr.commit();
-            }else{
+            } 
+            else 
                 res.send("Saque maior que saldo.");
-            }
+            
+        }else{
+            res.status(403).send("Forbiden");
         }
     }).catch((error) => {
-        console.log("catch error: " + error);
-        throw new Error();
+        console.log(req.query);
     })
-
-    
 }
 
-async function createOperation (res, current_user, transaction_type, amount){
+async function createOperation(res, current_user, transaction_type, amount) {
 
-    const {cpf} = current_user;
-
+    const { cpf } = current_user;
+    console.log("Create operation");
     try {
 
         let newTransaction = await models.Transaction.create({
             user_cpf: cpf,
             transaction_type,
-            amount,
+            amount
         },
-        {
-            fields: ['user_cpf', 'transaction_type', 'amount']
-        });
+            {
+                fields: ['user_cpf', 'transaction_type', 'amount']
+            });
 
         if (newTransaction) {
             res.send("Transaction successfully registered!")

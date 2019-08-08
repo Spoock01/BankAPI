@@ -1,11 +1,10 @@
 import { Router } from 'express';
 import { check, validationResult } from 'express-validator';
-import { registerUser } from '../controllers/users.controller';
+import { registerUser, compareUserPassword } from '../controllers/users.controller';
 import { CPF_REGEX, FULL_NAME_REGEX } from '../Utils/Utils';
+import jwt from 'jsonwebtoken';
 
 const router = Router();
-
-// TODO Mudar query to Body
 
 router.post('/register', [
     check('full_name').exists().withMessage("Full name is required")
@@ -36,16 +35,28 @@ router.get('/login', [
     check('password').exists().withMessage("Password is required.")
         .not().isEmpty().isLength({ min: 5 }).withMessage('Password must be at least 5 chars long.')
         .isString().withMessage("Password must be a string.")
-], (req, res, next) => {
+],async (req, res, next) => {
 
     const errors = validationResult(req);
 
     if (!errors.isEmpty())
         res.send(errors);
+    else{
+        const {cpf, password} = req.query;
 
-    next();
-    // return token
+        var result = await compareUserPassword(password, cpf);
+        console.log("Result: " + result);
+
+        if(result){
+            jwt.sign({cpf}, 'secretkey', {expiresIn: '120s'}, (err, token) => {
+                res.json({token: token});
+            });
+        }else{
+            console.log("Falso");
+            res.status(403).send("Incorrect password!");
+        }
+
+    }
 });
-
 
 export default router;
