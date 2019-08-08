@@ -6,12 +6,11 @@ export async function compareUserPassword(user_password, cpf){
         where: { cpf }
     });
 
-    const { password } = user;
-
-    console.log("___" + password + "_____" + user_password);
-    console.log(user_password === password);
-
-    return user_password === password ? true : false;
+    if(user != null){
+        const { password } = user;
+        return user_password === password ? true : false;
+    }else
+        return false; 
 
 }
 
@@ -31,7 +30,7 @@ export async function registerUser(req, res) {
         });
 
         if (newUser) {
-            res.json(newUser);
+            res.status(200).send("User successfully registered.");
         }
 
     } catch (error) {

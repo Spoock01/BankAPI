@@ -28,7 +28,8 @@ router.post('/register', [
 
 }, registerUser);
 
-router.get('/login', [
+router.post('/login', 
+[
     check('cpf').exists().withMessage("CPF is required.")
         .not().isEmpty().matches(CPF_REGEX).withMessage("Invalid cpf format.")
         .not().isAlphanumeric().withMessage("CPF must be a string."),
@@ -45,16 +46,13 @@ router.get('/login', [
         const {cpf, password} = req.query;
 
         var result = await compareUserPassword(password, cpf);
-        console.log("Result: " + result);
 
         if(result){
-            jwt.sign({cpf}, 'secretkey', {expiresIn: '120s'}, (err, token) => {
+            jwt.sign({cpf}, 'secretkey', {expiresIn: '1800s'}, (err, token) => {
                 res.json({token: token});
             });
-        }else{
-            console.log("Falso");
-            res.status(403).send("Incorrect password!");
-        }
+        }else
+            res.status(403).send("You have entered an invalid username or password.");
 
     }
 });

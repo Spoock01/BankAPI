@@ -1,10 +1,11 @@
 import { Router } from 'express';
-import { registerTransaction, getAllTransactionsByClient } from "../controllers/transactions.controller";
+import { registerTransaction, getAllTransactionsByClient, getClientWallet } from "../controllers/transactions.controller";
 import { check, validationResult } from 'express-validator';
 import { CPF_REGEX, OPERATION_TYPE } from '../Utils/Utils';
 import jwt from 'jsonwebtoken';
 
 const router = Router();
+var errors;
 
 router.post('/operation',
     [
@@ -15,38 +16,30 @@ router.post('/operation',
             .isIn(OPERATION_TYPE).withMessage("Unsupported transaction! Operations currently supported: " + OPERATION_TYPE)
             .not().isEmpty().withMessage("Transaction type cannot be empty"),
         check('amount').exists().withMessage("Amount is required!")
-        .isFloat().withMessage("Amount must be a float number.")
-            
+            .isFloat().withMessage("Amount must be a float number.")
+
 
     ],
-       verifyToken 
-    ,(req, res, next) => {
+    verifyToken
+    , async (req, res, next) => {
 
-        console.log(req.query.token);
         const errors = validationResult(req);
 
-        jwt.verify(req.query.token, 'secretkey', (err, authData) => {
-            if(err){
+        jwt.verify(req.headers.authorization, 'secretkey', (err, authData) => {
+            if (err) {
                 res.status(403).send("Token expirou.");
+            } else {
+                if (!errors.isEmpty())
+                    res.send(errors);
+                else {
+                    console.log("Calling registerTransaction");
+                    next();
+                }
             }
         });
-
-        if (!errors.isEmpty())
-            res.send(errors);
-        else{
-            console.log("Calling registerTransaction");
-            next();
-        } 
-        
     }, registerTransaction);
 
-
-router.get('/transactions', (req, res, next) => {
-    res.send("Transactions route");
-});
-
-
-router.get('/allTransactions',
+router.get('/clientTransactions',
     [
         check('user_cpf').not().isEmpty().withMessage("CPF cannot be empty.")
             .matches(CPF_REGEX).withMessage("Invalid cpf format.")
@@ -54,34 +47,63 @@ router.get('/allTransactions',
     ],
     (req, res, next) => {
 
-        const errors = validationResult(req);
-
-        if (!errors.isEmpty())
-            res.send(errors);
-        else 
+        if (isRequestValid(req))
             next();
-        
+        else
+            res.send(errors);
 
     }, getAllTransactionsByClient);
 
 
-    function verifyToken(req, res, next) {
-        // Get auth header value
-        const bearerHeader = req.headers['authorization'];
-        // Check if bearer is undefined
-        if(typeof bearerHeader !== 'undefined') {
-          // Split at the space
-          const bearer = bearerHeader.split(' ');
-          // Get token from array
-          const bearerToken = bearer[1];
-          // Set the token
-          req.token = bearerToken;
-          next();
-        } else {
+router.get('/balance',
+    [
+        check('cpf').not().isEmpty().withMessage("CPF cannot be empty.")
+            .matches(CPF_REGEX).withMessage("Invalid cpf format.")
+            .exists().withMessage("CPF is required!")
+    ],
+    verifyToken
+    , (req, res, next) => {
+        const errors = validationResult(req);
 
-          res.status(403).send("Status 403");
+        if (isRequestValid(req)) {
+            jwt.verify(req.headers.authorization, 'secretkey', (err, authData) => {
+                if (err) {
+                    res.status(403).send("Token expirou.");
+                } else {
+                    if (!errors.isEmpty())
+                        res.send(errors);
+                    else {
+                        console.log("Calling getWallet");
+                        next();
+                    }
+                }
+            });
         }
+}, getClientWallet);
+
+
+function isRequestValid(req) {
+    errors = validationResult(req);
+    return errors.isEmpty();
+}
+
+
+function verifyToken(req, res, next) {
+    // Get auth header value
+    const bearerHeader = req.headers['authorization'];
+    // Check if bearer is undefined
+    if (typeof bearerHeader !== 'undefined') {
+        // Split at the space
+        const bearer = bearerHeader.split(' ');
+        // Get token from array
+        const bearerToken = bearer[1];
+        // Set the token
+        req.token = bearerToken;
+        next();
+    } else {
+        res.status(403).send("Status 403");
     }
+}
 
 
 export default router;
