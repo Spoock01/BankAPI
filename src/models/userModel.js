@@ -18,11 +18,12 @@ export default (sequelize, DataTypes) => {
         wallet:{
             type: DataTypes.FLOAT,
             defaultValue: 0
+        },
+        accessToken: {
+            type: DataTypes.TEXT,
+            defaultValue: ''
         }
     
-        }, 
-        {
-            timestamps: false
         });
 
     return User;

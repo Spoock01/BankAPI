@@ -2,6 +2,10 @@ import { Router } from 'express';
 import { check, validationResult } from 'express-validator';
 import { registerUser } from '../controllers/users.controller';
 import { CPF_REGEX, FULL_NAME_REGEX } from '../Utils/Utils';
+import passport from 'passport';
+import passportSetup from '../config/passport-setup';
+
+
 
 const router = Router();
 
@@ -29,7 +33,8 @@ router.post('/register', [
 
 }, registerUser);
 
-router.get('/login', [
+router.get('/login',
+[
     check('cpf').exists().withMessage("CPF is required.")
         .not().isEmpty().matches(CPF_REGEX).withMessage("Invalid cpf format.")
         .not().isAlphanumeric().withMessage("CPF must be a string."),
@@ -45,7 +50,12 @@ router.get('/login', [
 
     next();
     // return token
-});
+},  passport.authenticate('google', {
+    scope: ['profile']
+}));
 
+router.get('/auth/redirect', passport.authenticate('google'), (req, res) => {
+    res.json(req.body);
+});
 
 export default router;

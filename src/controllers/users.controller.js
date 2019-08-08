@@ -1,6 +1,5 @@
 import models from '../models'
 
-
 export async function registerUser(req, res) {
 
     const { full_name, cpf, password } = req.query;
@@ -15,11 +14,9 @@ export async function registerUser(req, res) {
             fields: ['full_name', 'cpf', 'password']
         });
 
-        if (newUser) {
-
-            // res.send("User successfully created! Sending Token...");
-            res.json(newUser);
-        }
+        if (newUser) 
+            res.send("User successfully created! Sending Token...");
+ 
 
     } catch (error) {
         
