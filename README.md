@@ -59,6 +59,8 @@ Operações suportadas { CREDITO, DEBITO } para Depósito e Saque, respectivamen
 * http://127.0.0.1:9999/transaction/operation?cpf=000.000.000-00&amount=200.2&transaction_type=CREDITO
 __Importante__: O TOKEN de acesso deve ser enviado no header, na chave "Authorization".
 
+![Exemplo](https://i.imgur.com/P8Yt6bt.png)
+
 License
 ----
 
