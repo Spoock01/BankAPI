@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { registerTransaction, getAllTransactionsByClient, getClientWallet } from "../controllers/transactions.controller";
 import { check, validationResult } from 'express-validator';
-import SECRET_KEY from '../Utils/Utils';
+import { SECRET_KEY, CPF_REGEX }  from '../Utils/Utils';
 import jwt from 'jsonwebtoken';
 
 const router = Router();
@@ -9,7 +9,7 @@ var errors;
 
 router.post('/operation', verifyToken, async (req, res, next) => {
 
-        jwt.verify(req.headers.authorization, 'secretkey', (err, authData) => {
+        jwt.verify(req.headers.authorization, SECRET_KEY, (err, authData) => {
             if (err) {
                 res.status(403).send("Token expirou.");
             } else{
@@ -18,28 +18,45 @@ router.post('/operation', verifyToken, async (req, res, next) => {
         });
     }, registerTransaction);
 
-router.get('/clientTransactions', (req, res, next) => {
+router.get('/clientTransactions',
+[
+    check('cpf').not().isEmpty().withMessage("CPF cannot be empty.")
+        .matches(CPF_REGEX).withMessage("Invalid cpf format.")
+        .exists().withMessage("CPF is required!")
+],
 
-        if (isRequestValid(req))
-            next();
-        else
-            res.send(errors);
+(req, res, next) => {
 
-    }, getAllTransactionsByClient);
+    const error = validationResult(req);
+    if(error.isEmpty()){
+        next();
+    }else{
+        res.status(401).json(error);
+    }
+}, getAllTransactionsByClient);
 
 
-router.get('/balance', verifyToken, (req, res, next) => {
+router.get('/balance', verifyToken, 
+[
+    check('cpf').not().isEmpty().withMessage("CPF cannot be empty.")
+        .matches(CPF_REGEX).withMessage("Invalid cpf format.")
+        .exists().withMessage("CPF is required!")
+],
 
-        if (isRequestValid(req)) {
+(req, res, next) => {
 
-            jwt.verify(req.headers.authorization, SECRET_KEY, (err, authData) => {
-                if (err) {
-                    res.status(403).send("The token has expired!");
-                } else 
-                    next();  
-                
-            });
-        }
+    const error = validationResult(req);
+
+    if(error.isEmpty()){
+        jwt.verify(req.headers.authorization, SECRET_KEY, (err, authData) => {
+            if (err) {
+                res.status(403).send("The token has expired!");
+            } else 
+                next();  
+        });
+    }else{
+        res.status(401).json(error);
+    }
 }, getClientWallet);
 
 

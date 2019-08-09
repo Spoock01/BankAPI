@@ -4,10 +4,10 @@ import { OPERATION_TYPE } from '../Utils/Utils'
 export async function getAllTransactionsByClient(req, res) {
 
     try {
-        const { user_cpf } = req.query;
+        const { cpf } = req.query;
 
         const allTransactions = await models.Transaction.findAll({
-            where: { user_cpf }
+            where: { user_cpf: cpf }
         });
 
         res.send(allTransactions);
@@ -19,6 +19,8 @@ export async function getAllTransactionsByClient(req, res) {
 export async function getClientWallet(req, res){
 
     const { cpf } = req.query;
+
+
 
     var user = await models.User.findOne({
         where: { cpf }
