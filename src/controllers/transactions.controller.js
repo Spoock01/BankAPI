@@ -47,23 +47,25 @@ export async function getUserByCpf(cpf) {
     return current_user;
 }
 
-
-export async function registerTransaction(req, res, next) {
+export async function registerTransaction(req, res) {
 
     try{
     models.sequelize.transaction().then(async () => {
 
         const { transaction_type, cpf, amount } = req.query;
         const current_user = await getUserByCpf(cpf);
+        var newValue = 0;
 
         if (current_user != null) {
             const { wallet } = current_user;
 
-            var newValue = transaction_type === OPERATION_TYPE[0] ?
-                (parseFloat(wallet) + parseFloat(amount)) :
-                parseFloat(wallet) >= parseFloat(amount) ? (parseFloat(wallet) - parseFloat(amount)) : -1;
-
-            console.log(`Wallet: ${wallet} Amount ${amount} NewValue: ${newValue}`);
+            if(transaction_type === OPERATION_TYPE[0]){
+                newValue = (parseFloat(wallet) + parseFloat(amount));
+            }else if (transaction_type === OPERATION_TYPE[1] && parseFloat(wallet) >= parseFloat(amount)){
+                newValue = (parseFloat(wallet) - parseFloat(amount));
+            }else{
+                newValue = -1;
+            }
 
             if (newValue >= 0) {
                 current_user.update({ wallet: newValue });
@@ -78,7 +80,6 @@ export async function registerTransaction(req, res, next) {
     })
     }
     catch(error){
-        // Unhandled rejection SequelizeConnectionAcquireTimeoutError: Operation timeout
         console.log("Um erro ocorreu ao processar a transação! Tente novamente mais tarde.");
     };
 }
@@ -86,10 +87,10 @@ export async function registerTransaction(req, res, next) {
 async function createOperation(res, current_user, transaction_type, amount) {
 
     const { cpf } = current_user;
-    console.log("Create operation");
+
     try {
 
-        let newTransaction = await models.Transaction.create({
+        await models.Transaction.create({
             user_cpf: cpf,
             transaction_type,
             amount
@@ -98,9 +99,7 @@ async function createOperation(res, current_user, transaction_type, amount) {
             fields: ['user_cpf', 'transaction_type', 'amount']
         });
 
-        if (newTransaction) {
-            res.send("Transaction successfully registered!")
-        }
+        res.send("Transaction successfully registered!");        
 
     } catch (error) {
 
@@ -108,6 +107,6 @@ async function createOperation(res, current_user, transaction_type, amount) {
             message: "Something goes wrong when creating op.",
             data: {},
             error
-        })
+        });
     }
 }

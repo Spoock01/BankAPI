@@ -1,5 +1,6 @@
 
 import Sequelize from 'sequelize';
+import bcrypt from 'bcrypt';
 
 const sequelize = new Sequelize(
     'BankAPI',

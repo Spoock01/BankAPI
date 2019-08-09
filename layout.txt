@@ -1,18 +1,21 @@
 register:
 	params: nome, cpf, senha
-	return: token OAUTH*
 
 login:
 	params: cpf, senha
-	return: token OAUTH*
+	return: token
 
 credit:
-	params: value, token OAUTH
+	params: value, token
 	return: status
 
 debit:
-	params: value, token OAUTH
+	params: value, token
 	return: status
+
+balance:
+	params: cpf
+	return: balance
 
 transactions:
 	params: cpf, token OAUTH

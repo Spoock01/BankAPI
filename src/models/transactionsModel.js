@@ -1,3 +1,5 @@
+import { OPERATION_TYPE, CPF_REGEX } from "../Utils/Utils";
+
 export default (sequelize, DataTypes) => {
 
     const Transaction = sequelize.define('transactions', {
@@ -5,10 +7,21 @@ export default (sequelize, DataTypes) => {
         user_cpf: {
             type: DataTypes.TEXT,
             allowNull: false,
+            validate: {
+                isCpf(cpf) {
+                    if (!cpf.match(CPF_REGEX)) {
+                        throw new Error('Cpf is not valid!');
+                    }
+                }
+            }
         },
         transaction_type: {
             type: DataTypes.TEXT,
-            allowNull: false
+            allowNull: false, 
+            isIn: {
+                args: [OPERATION_TYPE],
+                msg: "Unsupported transaction! Operations currently supported: " + OPERATION_TYPE
+            }
         },
         date: {
             type: DataTypes.DATE,
@@ -16,7 +29,13 @@ export default (sequelize, DataTypes) => {
         },
         amount:{
             type: DataTypes.FLOAT,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                isFloat: {
+                    args: true,
+                    msg: "Amount must be float."
+                }
+            } 
         }
     }, 
     {

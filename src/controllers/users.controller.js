@@ -1,17 +1,17 @@
-import models from '../models'
+import models from '../models';
+import bcrypt from 'bcrypt';
 
 
-export async function compareUserPassword(user_password, cpf){
+export async function compareUserPassword(user_password, cpf) {
+
     var user = await models.User.findOne({
         where: { cpf }
     });
 
-    if(user != null){
-        const { password } = user;
-        return user_password === password ? true : false;
-    }else
-        return false; 
-
+    if (user != null) {
+        return await bcrypt.compare(user_password, user.password);
+    }
+    return false;
 }
 
 export async function registerUser(req, res) {
@@ -19,25 +19,19 @@ export async function registerUser(req, res) {
     const { full_name, cpf, password } = req.query;
 
     try {
-
-        let newUser = await models.User.create({
+        await models.User.create({
             full_name,
             cpf,
-            password, //falta codificar
-
-        },{
-            fields: ['full_name', 'cpf', 'password']
-        });
-
-        if (newUser) {
-            res.status(200).send("User successfully registered.");
-        }
-
+            password,
+        }, {
+                fields: ['full_name', 'cpf', 'password']
+            });
+        res.status(201).json({success: "User successfully registered!"});
     } catch (error) {
         
         res.json({
-            Message: error
-        })
+            Message: error.errors[0].message
+        });
     }
 }
 

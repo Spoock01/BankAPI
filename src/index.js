@@ -13,7 +13,7 @@ app.use('/transaction', transactionsRoutes);
 app.use('/user', userRoutes);
 
 
-models.sequelize.sync({ force: false }).then(() =>{
+models.sequelize.sync({ force: true }).then(() =>{
     app.listen(port);
     console.log(`Running server on port ${port}`);
 
