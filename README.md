@@ -14,7 +14,7 @@ Para realizar os testes, é necessário ter o [Postgres v11](https://www.postgre
 * Baixar ou clonar esse repositório
 * Após realizar a instalação, um banco de dados deve ser criado com o nome "BankAPI" (sem aspas);
 Para facilitar, todas as opções foram deixadas no padrão durante a instalação. Em caso de erro, verificar o arquivo *index.js* presente na pasta *models*. *(src/models/index.js)*
-* Bank API também necessita do [Node.js](https://nodejs.org/) instalado.
+* Bank API também necessita do [Node.js](https://nodejs.org/) instalado. A versão utilizada no desafio foi a 10.16.2 LTS.
 * Com todas as dependências instaladas, utilizando a linha de comando ou o terminal no vscode, digite o seguinte comando:
 ```sh
 npm run dev
