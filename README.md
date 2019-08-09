@@ -37,20 +37,27 @@ Durante o desenvolvimento, o [Postman](https://www.getpostman.com/) foi utilizad
 
 ###### Registro [POST Request]: 
 * http://localhost:9999/user/register?full_name=NomeCompleto&cpf=000.000.000-00&password=******
-[Registro OK]
+
+```sh
+{
+    "success": "User successfully registered!"
+}
+```
+
 ###### Login [POST Request]:
 * http://localhost:9999/user/login?cpf=000.000.000-00&password=******
 Um login efetuado com sucesso deverá responder com um JSON e um TOKEN para acesso. O TOKEN tem validade por 1800 segundos.
-[Login OK]
 
+```sh
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcGYiOiIwMDAuMDAwLjAwMC0wMSIsImlhdCI6MTU2NTMyODEyNSwiZXhwIjoxNTY1MzI5OTI1fQ.oRljCtcmueAq1dgivpeNK82ljoJSrt24l-7SuBtkUoc"
+}
+```
 ###### Transações [POST Request]:
 
 Operações suportadas { CREDITO, DEBITO } para Depósito e Saque, respectivamente.
 * http://127.0.0.1:9999/transaction/operation?cpf=000.000.000-00&amount=200.2&transaction_type=CREDITO
-__Importante__: O TOKEN de acesso deve ser enviado no header, na chave "Authorization" como no exemplo a seguir.
-
-[Header OK]
-
+__Importante__: O TOKEN de acesso deve ser enviado no header, na chave "Authorization".
 
 License
 ----
